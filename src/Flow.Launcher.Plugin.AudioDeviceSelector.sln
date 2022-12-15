@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp2", "ConsoleApp2\ConsoleApp2.csproj", "{B41EBB69-DD65-4BAA-A824-0A6725846385}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flow.Launcher.Plugin.AudioDeviceSelector", "Flow.Launcher.Plugin.AudioDeviceSelector\Flow.Launcher.Plugin.AudioDeviceSelector.csproj", "{03FFA443-5F50-48D5-8869-F3DF316803AB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B41EBB69-DD65-4BAA-A824-0A6725846385}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B41EBB69-DD65-4BAA-A824-0A6725846385}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B41EBB69-DD65-4BAA-A824-0A6725846385}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B41EBB69-DD65-4BAA-A824-0A6725846385}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03FFA443-5F50-48D5-8869-F3DF316803AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03FFA443-5F50-48D5-8869-F3DF316803AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03FFA443-5F50-48D5-8869-F3DF316803AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03FFA443-5F50-48D5-8869-F3DF316803AB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DD05CB8F-3BAF-42DE-AE56-4151B954071E}
+	EndGlobalSection
+EndGlobal
