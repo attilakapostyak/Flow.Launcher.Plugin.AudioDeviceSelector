@@ -6,5 +6,6 @@
     <system:String x:Key="plugin_audiodeviceselector_plugin_description">Quickly change the playback device</system:String>
 
     <system:String x:Key="plugin_audiodeviceselector_device_not_found">Device '{0}' not found</system:String>
+    <system:String x:Key="plugin_audiodeviceselector_error_while_changing_device">An error occurred while changing the device.</system:String>
 
 </ResourceDictionary>

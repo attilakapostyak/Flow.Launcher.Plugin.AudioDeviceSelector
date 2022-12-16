@@ -50,7 +50,7 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
             var policy = new PolicyConfigClientWin7();
             policy.SetDefaultEndpoint(device.ID, ERole.eMultimedia);
 
-            return false;
+            return true;
         }
 
         public List<Result> Query(Query query)
@@ -68,12 +68,20 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
                         SubTitle = GetTranslatedPluginTitle(),
                         Action = c =>
                         {
-                            if (!SetDevice(device.FriendlyName))
+                            try
                             {
-                                // Show Notification Message if device is not found
-                                // Can happen in situations where since FlowLauncher was shown, the device went offline
+                                if (!SetDevice(device.FriendlyName))
+                                {
+                                    // Show Notification Message if device is not found
+                                    // Can happen in situations where since FlowLauncher was shown, the device went offline
+                                    Context.API.ShowMsg(GetTranslatedPluginTitle(),
+                                                            GetTranslatedDeviceNotFoundError(device.FriendlyName));
+                                }
+                            }
+                            catch (Exception)
+                            {
                                 Context.API.ShowMsg(GetTranslatedPluginTitle(),
-                                                        GetTranslatedDeviceNotFoundError(device.FriendlyName));
+                                                        GetTranslatedChangingDeviceError());
                             }
                             return true;
                         },
@@ -126,6 +134,11 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
             }
 
             return string.Format(message, deviceName);
+        }
+        
+        public string GetTranslatedChangingDeviceError()
+        {
+            return Context.API.GetTranslation("plugin_audiodeviceselector_error_while_changing_device"); ;
         }
 
         public string GetTranslatedPluginTitle()
