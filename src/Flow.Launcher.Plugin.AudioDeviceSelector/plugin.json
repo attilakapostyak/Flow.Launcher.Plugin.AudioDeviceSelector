@@ -1,0 +1,12 @@
+{
+  "ID": "C04175CF5284406DAA9E30A85EC7DA76",
+  "ActionKeyword": "ad",
+  "Name": "Audio Device Selector",
+  "Description": "Audio Device Selector",
+  "Author": "attilakapostyak",
+  "Version": "1.0.0",
+  "Language": "csharp",
+  "Website": "https://github.com/Flow-Launcher/plugin-samplesaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "ExecuteFileName": "Flow.Launcher.Plugin.AudioDeviceSelector.dll",
+  "IcoPath": "Images\\speaker.png"
+}
