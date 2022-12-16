@@ -23,7 +23,7 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build 'src\Flow.Launcher.Plugin.AudioDeviceSelector\Flow.Launcher.Plugin.AudioDeviceSelector.csproj' --no-restore
     - name: Build
       run: |
         dotnet publish 'src\Flow.Launcher.Plugin.AudioDeviceSelector\Flow.Launcher.Plugin.AudioDeviceSelector.csproj' -c Release -o "AudioDeviceSelector"
