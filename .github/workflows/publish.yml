@@ -21,7 +21,7 @@ jobs:
       with:
         dotnet-version: 5.0.x
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore 'src\Flow.Launcher.Plugin.AudioDeviceSelector\Flow.Launcher.Plugin.AudioDeviceSelector.csproj'
     - name: Build
       run: dotnet build 'src\Flow.Launcher.Plugin.AudioDeviceSelector\Flow.Launcher.Plugin.AudioDeviceSelector.csproj' --no-restore
     - name: Build
