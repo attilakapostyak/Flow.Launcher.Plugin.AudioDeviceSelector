@@ -4,7 +4,7 @@
 name: .NET
 
 on:
-  push:
+  pull_request:
     branches: [ "main" ]
 
 jobs:
@@ -22,14 +22,4 @@ jobs:
       run: dotnet restore 'src\Flow.Launcher.Plugin.AudioDeviceSelector\Flow.Launcher.Plugin.AudioDeviceSelector.csproj'
     - name: Build
       run: dotnet build 'src\Flow.Launcher.Plugin.AudioDeviceSelector\Flow.Launcher.Plugin.AudioDeviceSelector.csproj' --no-restore
-    - name: Dotnet Publish
-      run: |
-        dotnet publish 'src\Flow.Launcher.Plugin.AudioDeviceSelector\Flow.Launcher.Plugin.AudioDeviceSelector.csproj' -c Release -o "AudioDeviceSelector"
-        7z a -tzip "Flow.Launcher.Plugin.AudioDeviceSelector.zip" "AudioDeviceSelector/*"
-        rm -r "AudioDeviceSelector"
-    - name: Create Release
-      uses: softprops/action-gh-release@v1
-      with:
-        files: "Flow.Launcher.Plugin.AudioDeviceSelector.zip"
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
