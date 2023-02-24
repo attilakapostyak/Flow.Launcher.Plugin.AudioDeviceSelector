@@ -43,7 +43,7 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
         public bool SetDevice(string deviceFriendlyName)
         {
             var devices = GetDevices();
-            var device = devices.Find(d => d.FriendlyName == deviceFriendlyName);
+            var device = devices.Find(d => d.DeviceDesc == deviceFriendlyName);
             if (device == null)
                 return false;
             
@@ -64,18 +64,18 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
                 {
                     var result = new Result
                     {
-                        Title = device.FriendlyName,
+                        Title = device.DeviceDesc,
                         SubTitle = GetTranslatedPluginTitle(),
                         Action = c =>
                         {
                             try
                             {
-                                if (!SetDevice(device.FriendlyName))
+                                if (!SetDevice(device.DeviceDesc))
                                 {
                                     // Show Notification Message if device is not found
                                     // Can happen in situations where since FlowLauncher was shown, the device went offline
                                     Context.API.ShowMsg(GetTranslatedPluginTitle(),
-                                                            GetTranslatedDeviceNotFoundError(device.FriendlyName));
+                                                            GetTranslatedDeviceNotFoundError(device.DeviceDesc));
                                 }
                             }
                             catch (Exception)
