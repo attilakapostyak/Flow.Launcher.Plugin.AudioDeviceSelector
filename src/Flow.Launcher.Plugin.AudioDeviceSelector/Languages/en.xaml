@@ -8,4 +8,10 @@
     <system:String x:Key="plugin_audiodeviceselector_device_not_found">Device '{0}' not found</system:String>
     <system:String x:Key="plugin_audiodeviceselector_error_while_changing_device">An error occurred while changing the device.</system:String>
 
+    <system:String x:Key="plugin_audiodeviceselector_settings_devicename_displaymode">Display Mode:</system:String>
+
+    <system:String x:Key="plugin_audiodeviceselector_settings_friendlynameoption">Friendly Name</system:String>
+    <system:String x:Key="plugin_audiodeviceselector_settings_devicenameoption">Device Name</system:String>
+    <system:String x:Key="plugin_audiodeviceselector_settings_devicedescriptionoption">Device Description</system:String>
+
 </ResourceDictionary>

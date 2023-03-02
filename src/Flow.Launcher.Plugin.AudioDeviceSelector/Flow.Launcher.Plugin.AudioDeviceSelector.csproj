@@ -12,7 +12,8 @@
     <ApplicationIcon />
     <OutputType>Library</OutputType>
     <StartupObject />
-    <BaseOutputPath>C:\Users\attila\AppData\Local\FlowLauncher\app-1.9.5\Plugins\Flow.Launcher.Plugin.AudioDeviceSelector</BaseOutputPath>
+    <UseWpf>true</UseWpf>
+    <BaseOutputPath>C:\Users\attila\AppData\Local\FlowLauncher\app-1.9.5\Plugins\Flow.Launcher.Plugin.AudioDeviceSelector\\</BaseOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,6 +23,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Remove="Images\speaker.png" />
+    <None Remove="Images\speaker_resource.png" />
+    <Resource Include="Images\speaker_resource.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Content Include="Images\speaker.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

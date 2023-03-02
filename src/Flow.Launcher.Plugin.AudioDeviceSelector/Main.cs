@@ -1,76 +1,92 @@
-﻿using Flow.Launcher.Plugin.AudioDeviceSelector.Audio.Interop;
+﻿using Flow.Launcher.Plugin.AudioDeviceSelector.Audio;
+using Flow.Launcher.Plugin.AudioDeviceSelector.Audio.Interop;
+using Flow.Launcher.Plugin.AudioDeviceSelector.Components;
+using Flow.Launcher.Plugin.AudioDeviceSelector.Views;
 using NAudio.CoreAudioApi;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.Windows.Controls;
+using System.Windows.Navigation;
 
 namespace Flow.Launcher.Plugin.AudioDeviceSelector
 {
-    public class Main : IPlugin, IPluginI18n
+    public class Main : IPlugin, IPluginI18n, ISettingProvider
     {
         internal PluginInitContext Context;
 
-        private List<MMDevice> devices = null;
         private DateTime lastDeviceUpdateTimeStamp = DateTime.Now;
         private int updateIntervalSeconds = 5;
         private MMDeviceEnumerator deviceEnumerator = new MMDeviceEnumerator();
 
         private const string imagePath = "Images/speaker.png";
 
-        public List<MMDevice> GetDevices()
+        private SettingsUserControl SettingWindow;
+        private Settings settings;
+        private bool disposedValue;
+
+        private AudioDevicesManager audioDevicesManager;
+
+        public Control CreateSettingPanel()
         {
-            var datetime1 = DateTime.Now;
-            var devices = new List<MMDevice>();
-
-            var endpoints = deviceEnumerator.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active);
-            foreach (var endpoint in endpoints)
-            {
-                devices.Add(endpoint);
-            }
-
-            return devices;
+            SettingWindow = new SettingsUserControl(Context, settings, audioDevicesManager);
+            return SettingWindow;
         }
 
-        public void UpdateDevices()
+        public TitleTypeSettings GetTitleTypeSettings(Settings settings)
         {
-            DateTime currentTime = DateTime.Now;
-            if (devices == null || (currentTime - lastDeviceUpdateTimeStamp).TotalSeconds > updateIntervalSeconds)
-            {
-                devices = GetDevices();
-                lastDeviceUpdateTimeStamp = currentTime;
-            }
-        }
+            if (settings.DisplayFriendlyName)
+                return TitleTypeSettings.FriendlyName;
+            if (settings.DisplayDeviceName)
+                return TitleTypeSettings.DeviceName;
+            if (settings.DisplayDeviceDescription)
+                return TitleTypeSettings.DeviceDescription;
 
-        public bool SetDevice(string deviceFriendlyName)
-        {
-            var devices = GetDevices();
-            var device = devices.Find(d => d.FriendlyName == deviceFriendlyName);
-            if (device == null)
-                return false;
-            
-            var policy = new PolicyConfigClientWin7();
-            policy.SetDefaultEndpoint(device.ID, ERole.eMultimedia);
-
-            return true;
+            return TitleTypeSettings.FriendlyName;
         }
 
         public List<Result> Query(Query query)
         {
             try
             {
-                UpdateDevices();
+                audioDevicesManager.UpdateDevices();
                 var results = new List<Result>();
 
-                foreach (var device in devices)
+                var titleType = GetTitleTypeSettings(settings);
+
+                foreach (var device in audioDevicesManager.Devices)
                 {
+                    string title = string.Empty;
+                    string subTitle = string.Empty;
+                    switch (titleType)
+                    {
+                        case TitleTypeSettings.FriendlyName:
+                            title = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.FriendlyName);
+                            break;
+                        case TitleTypeSettings.DeviceName:
+                            title = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.DeviceName);
+                            subTitle = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.DeviceDescription);
+                            break;
+                        case TitleTypeSettings.DeviceDescription:
+                            title = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.DeviceDescription);
+                            subTitle = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.DeviceName);
+                            break;
+                    }
+
+                    if (string.IsNullOrEmpty(subTitle) || (subTitle != null && subTitle.Trim().Length == 0)) 
+                    {
+                        subTitle = GetTranslatedPluginTitle();
+                    }
+
                     var result = new Result
                     {
-                        Title = device.FriendlyName,
-                        SubTitle = GetTranslatedPluginTitle(),
+                        Title = title,
+                        SubTitle = subTitle,
                         Action = c =>
                         {
                             try
                             {
-                                if (!SetDevice(device.FriendlyName))
+                                if (!audioDevicesManager.SetDevice(device.FriendlyName))
                                 {
                                     // Show Notification Message if device is not found
                                     // Can happen in situations where since FlowLauncher was shown, the device went offline
@@ -123,6 +139,11 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
         public void Init(PluginInitContext context)
         {
             Context = context;
+            settings = Context.API.LoadSettingJsonStorage<Settings>();
+            if (!settings.DisplayFriendlyName && !settings.DisplayDeviceName && !settings.DisplayDeviceDescription)
+                settings.DisplayFriendlyName = true;
+
+            audioDevicesManager = new AudioDevicesManager();
         }
 
         public string GetTranslatedDeviceNotFoundError(string deviceName)

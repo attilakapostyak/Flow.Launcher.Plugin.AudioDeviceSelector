@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "Flow.Launcher.Plugin.AudioDeviceSelector": {
+      "commandName": "Project"
+    },
+    "Run Flow Launcher": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Users\\attila\\AppData\\Local\\FlowLauncher\\Flow.Launcher.exe"
+    }
+  }
+}

@@ -5,6 +5,8 @@ VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Flow.Launcher.Plugin.AudioDeviceSelector", "Flow.Launcher.Plugin.AudioDeviceSelector\Flow.Launcher.Plugin.AudioDeviceSelector.csproj", "{03FFA443-5F50-48D5-8869-F3DF316803AB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flow.Launcher.Plugin.AudioDeviceSelector.Tests", "Flow.Launcher.Plugin.AudioDeviceSelector.Tests\Flow.Launcher.Plugin.AudioDeviceSelector.Tests.csproj", "{B7882135-1891-4ED4-B116-8CD4144E5408}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{03FFA443-5F50-48D5-8869-F3DF316803AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{03FFA443-5F50-48D5-8869-F3DF316803AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{03FFA443-5F50-48D5-8869-F3DF316803AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B7882135-1891-4ED4-B116-8CD4144E5408}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7882135-1891-4ED4-B116-8CD4144E5408}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7882135-1891-4ED4-B116-8CD4144E5408}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7882135-1891-4ED4-B116-8CD4144E5408}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
