@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Windows.Controls;
 using Flow.Launcher.Plugin.AudioDeviceSelector.Audio;
 using Flow.Launcher.Plugin.AudioDeviceSelector.Components;
@@ -42,64 +43,25 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
         {
             try
             {
-                audioDevicesManager.UpdateDevices();
-                var results = new List<Result>();
+                var allDevices = CreateAllDevicesResultsList();
 
-                var titleType = GetTitleTypeSettings();
-
-                foreach (var device in audioDevicesManager.Devices)
+                var result = new List<Result>();
+                if (!string.IsNullOrWhiteSpace(query.Search))
                 {
-                    string title = string.Empty;
-                    string subTitle = string.Empty;
-                    switch (titleType)
-                    {
-                        case TitleTypeSettings.FriendlyName:
-                            title = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.FriendlyName);
-                            break;
-                        case TitleTypeSettings.DeviceName:
-                            title = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.DeviceName);
-                            subTitle = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.DeviceDescription);
-                            break;
-                        case TitleTypeSettings.DeviceDescription:
-                            title = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.DeviceDescription);
-                            subTitle = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.DeviceName);
-                            break;
-                    }
-
-                    if (string.IsNullOrWhiteSpace(subTitle))
-                    {
-                        subTitle = GetTranslatedPluginTitle();
-                    }
-
-                    var result = new Result
-                    {
-                        Title = title,
-                        SubTitle = subTitle,
-                        Action = _ =>
-                        {
-                            try
-                            {
-                                if (!audioDevicesManager.SetDevice(device.FriendlyName))
-                                {
-                                    // Show Notification Message if device is not found
-                                    // Can happen in situations where since FlowLauncher was shown, the device went offline
-                                    Context.API.ShowMsg(GetTranslatedPluginTitle(), GetTranslatedDeviceNotFoundError(device.FriendlyName));
-                                }
-                            }
-                            catch (Exception)
-                            {
-                                Context.API.ShowMsg(GetTranslatedPluginTitle(), GetTranslatedChangingDeviceError());
-                            }
-
-                            return true;
-                        },
-                        IcoPath = imagePath
-                    };
-
-                    results.Add(result);
+                    // ReSharper disable once ConvertToLocalFunction
+                    Func<Result, bool> resultContainsQuery = r =>
+                        r.Title.Contains(query.Search, StringComparison.CurrentCultureIgnoreCase) ||
+                        r.SubTitle.Contains(query.Search, StringComparison.CurrentCultureIgnoreCase);
+                    result = allDevices.Where(resultContainsQuery).ToList();
                 }
 
-                return results;
+                // be lenient to the user: if the query has a typo, show allDevices
+                if (result.Count == 0)
+                {
+                    result = allDevices;
+                }
+
+                return result;
             }
             catch (Exception e)
             {
@@ -109,6 +71,68 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
                     e.GetBaseException().Message
                 );
             }
+        }
+
+        private List<Result> CreateAllDevicesResultsList()
+        {
+            audioDevicesManager.UpdateDevices();
+            var results = new List<Result>();
+
+            var titleType = GetTitleTypeSettings();
+
+            foreach (var device in audioDevicesManager.Devices)
+            {
+                string title = string.Empty;
+                string subTitle = string.Empty;
+                switch (titleType)
+                {
+                    case TitleTypeSettings.FriendlyName:
+                        title = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.FriendlyName);
+                        break;
+                    case TitleTypeSettings.DeviceName:
+                        title = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.DeviceName);
+                        subTitle = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.DeviceDescription);
+                        break;
+                    case TitleTypeSettings.DeviceDescription:
+                        title = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.DeviceDescription);
+                        subTitle = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.DeviceName);
+                        break;
+                }
+
+                if (string.IsNullOrWhiteSpace(subTitle))
+                {
+                    subTitle = GetTranslatedPluginTitle();
+                }
+
+                var result = new Result
+                {
+                    Title = title,
+                    SubTitle = subTitle,
+                    Action = _ =>
+                    {
+                        try
+                        {
+                            if (!audioDevicesManager.SetDevice(device.FriendlyName))
+                            {
+                                // Show Notification Message if device is not found
+                                // Can happen in situations where since FlowLauncher was shown, the device went offline
+                                Context.API.ShowMsg(GetTranslatedPluginTitle(), GetTranslatedDeviceNotFoundError(device.FriendlyName));
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            Context.API.ShowMsg(GetTranslatedPluginTitle(), GetTranslatedChangingDeviceError());
+                        }
+
+                        return true;
+                    },
+                    IcoPath = imagePath
+                };
+
+                results.Add(result);
+            }
+
+            return results;
         }
 
         // Returns a list with a single result
