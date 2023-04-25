@@ -70,7 +70,7 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
                             break;
                     }
 
-                    if (string.IsNullOrEmpty(subTitle) || (subTitle != null && subTitle.Trim().Length == 0)) 
+                    if (string.IsNullOrWhiteSpace(subTitle))
                     {
                         subTitle = GetTranslatedPluginTitle();
                     }
