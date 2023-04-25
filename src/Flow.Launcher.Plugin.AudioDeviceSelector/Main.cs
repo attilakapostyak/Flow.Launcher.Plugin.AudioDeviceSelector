@@ -1,29 +1,23 @@
-﻿using Flow.Launcher.Plugin.AudioDeviceSelector.Audio;
-using Flow.Launcher.Plugin.AudioDeviceSelector.Audio.Interop;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Windows.Controls;
+using Flow.Launcher.Plugin.AudioDeviceSelector.Audio;
 using Flow.Launcher.Plugin.AudioDeviceSelector.Components;
 using Flow.Launcher.Plugin.AudioDeviceSelector.Views;
-using NAudio.CoreAudioApi;
-using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using System.Windows.Controls;
-using System.Windows.Navigation;
 
 namespace Flow.Launcher.Plugin.AudioDeviceSelector
 {
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class Main : IPlugin, IPluginI18n, ISettingProvider
     {
-        internal PluginInitContext Context;
-
-        private DateTime lastDeviceUpdateTimeStamp = DateTime.Now;
-        private int updateIntervalSeconds = 5;
-        private MMDeviceEnumerator deviceEnumerator = new MMDeviceEnumerator();
+        private PluginInitContext Context;
 
         private const string imagePath = "Images/speaker.png";
 
         private SettingsUserControl SettingWindow;
         private Settings settings;
-        private bool disposedValue;
 
         private AudioDevicesManager audioDevicesManager;
 
@@ -33,7 +27,7 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
             return SettingWindow;
         }
 
-        public TitleTypeSettings GetTitleTypeSettings(Settings settings)
+        private TitleTypeSettings GetTitleTypeSettings()
         {
             if (settings.DisplayFriendlyName)
                 return TitleTypeSettings.FriendlyName;
@@ -49,65 +43,25 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
         {
             try
             {
-                audioDevicesManager.UpdateDevices();
-                var results = new List<Result>();
+                var allDevices = CreateAllDevicesResultsList();
 
-                var titleType = GetTitleTypeSettings(settings);
-
-                foreach (var device in audioDevicesManager.Devices)
+                var result = new List<Result>();
+                if (!string.IsNullOrWhiteSpace(query.Search))
                 {
-                    string title = string.Empty;
-                    string subTitle = string.Empty;
-                    switch (titleType)
-                    {
-                        case TitleTypeSettings.FriendlyName:
-                            title = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.FriendlyName);
-                            break;
-                        case TitleTypeSettings.DeviceName:
-                            title = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.DeviceName);
-                            subTitle = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.DeviceDescription);
-                            break;
-                        case TitleTypeSettings.DeviceDescription:
-                            title = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.DeviceDescription);
-                            subTitle = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.DeviceName);
-                            break;
-                    }
-
-                    if (string.IsNullOrEmpty(subTitle) || (subTitle != null && subTitle.Trim().Length == 0)) 
-                    {
-                        subTitle = GetTranslatedPluginTitle();
-                    }
-
-                    var result = new Result
-                    {
-                        Title = title,
-                        SubTitle = subTitle,
-                        Action = c =>
-                        {
-                            try
-                            {
-                                if (!audioDevicesManager.SetDevice(device.FriendlyName))
-                                {
-                                    // Show Notification Message if device is not found
-                                    // Can happen in situations where since FlowLauncher was shown, the device went offline
-                                    Context.API.ShowMsg(GetTranslatedPluginTitle(),
-                                                            GetTranslatedDeviceNotFoundError(device.FriendlyName));
-                                }
-                            }
-                            catch (Exception)
-                            {
-                                Context.API.ShowMsg(GetTranslatedPluginTitle(),
-                                                        GetTranslatedChangingDeviceError());
-                            }
-                            return true;
-                        },
-                        IcoPath = imagePath
-                    };
-
-                    results.Add(result);
+                    // ReSharper disable once ConvertToLocalFunction
+                    Func<Result, bool> resultContainsQuery = r =>
+                        r.Title.Contains(query.Search, StringComparison.CurrentCultureIgnoreCase) ||
+                        r.SubTitle.Contains(query.Search, StringComparison.CurrentCultureIgnoreCase);
+                    result = allDevices.Where(resultContainsQuery).ToList();
                 }
 
-                return results;
+                // be lenient to the user: if the query has a typo, show allDevices
+                if (result.Count == 0)
+                {
+                    result = allDevices;
+                }
+
+                return result;
             }
             catch (Exception e)
             {
@@ -119,22 +73,84 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
             }
         }
 
+        private List<Result> CreateAllDevicesResultsList()
+        {
+            audioDevicesManager.UpdateDevices();
+            var results = new List<Result>();
+
+            var titleType = GetTitleTypeSettings();
+
+            foreach (var device in audioDevicesManager.Devices)
+            {
+                string title = string.Empty;
+                string subTitle = string.Empty;
+                switch (titleType)
+                {
+                    case TitleTypeSettings.FriendlyName:
+                        title = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.FriendlyName);
+                        break;
+                    case TitleTypeSettings.DeviceName:
+                        title = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.DeviceName);
+                        subTitle = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.DeviceDescription);
+                        break;
+                    case TitleTypeSettings.DeviceDescription:
+                        title = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.DeviceDescription);
+                        subTitle = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.DeviceName);
+                        break;
+                }
+
+                if (string.IsNullOrWhiteSpace(subTitle))
+                {
+                    subTitle = GetTranslatedPluginTitle();
+                }
+
+                var result = new Result
+                {
+                    Title = title,
+                    SubTitle = subTitle,
+                    Action = _ =>
+                    {
+                        try
+                        {
+                            if (!audioDevicesManager.SetDevice(device.FriendlyName))
+                            {
+                                // Show Notification Message if device is not found
+                                // Can happen in situations where since FlowLauncher was shown, the device went offline
+                                Context.API.ShowMsg(GetTranslatedPluginTitle(), GetTranslatedDeviceNotFoundError(device.FriendlyName));
+                            }
+                        }
+                        catch (Exception)
+                        {
+                            Context.API.ShowMsg(GetTranslatedPluginTitle(), GetTranslatedChangingDeviceError());
+                        }
+
+                        return true;
+                    },
+                    IcoPath = imagePath
+                };
+
+                results.Add(result);
+            }
+
+            return results;
+        }
+
         // Returns a list with a single result
         private static List<Result> SingleResult(string title, string subtitle = "", Action action = default, bool hideAfterAction = true) =>
             new()
+            {
+                new Result
                 {
-                    new Result()
+                    Title = title,
+                    SubTitle = subtitle,
+                    IcoPath = imagePath,
+                    Action = _ =>
                     {
-                        Title = title,
-                        SubTitle = subtitle,
-                        IcoPath = imagePath ,
-                        Action = _ =>
-                        {
-                            action?.Invoke();
-                            return hideAfterAction;
-                        }
+                        action?.Invoke();
+                        return hideAfterAction;
                     }
-                };
+                }
+            };
 
         public void Init(PluginInitContext context)
         {
@@ -146,7 +162,7 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
             audioDevicesManager = new AudioDevicesManager();
         }
 
-        public string GetTranslatedDeviceNotFoundError(string deviceName)
+        private string GetTranslatedDeviceNotFoundError(string deviceName)
         {
             var message = Context.API.GetTranslation("plugin_audiodeviceselector_device_not_found");
             if (string.IsNullOrEmpty(message))
@@ -156,10 +172,10 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
 
             return string.Format(message, deviceName);
         }
-        
-        public string GetTranslatedChangingDeviceError()
+
+        private string GetTranslatedChangingDeviceError()
         {
-            return Context.API.GetTranslation("plugin_audiodeviceselector_error_while_changing_device"); ;
+            return Context.API.GetTranslation("plugin_audiodeviceselector_error_while_changing_device");
         }
 
         public string GetTranslatedPluginTitle()
