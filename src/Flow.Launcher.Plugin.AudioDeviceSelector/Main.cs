@@ -12,7 +12,7 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
     [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class Main : IPlugin, IPluginI18n, ISettingProvider
     {
-        internal PluginInitContext Context;
+        private PluginInitContext Context;
 
         private const string imagePath = "Images/speaker.png";
 
@@ -27,7 +27,7 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
             return SettingWindow;
         }
 
-        public TitleTypeSettings GetTitleTypeSettings()
+        private TitleTypeSettings GetTitleTypeSettings()
         {
             if (settings.DisplayFriendlyName)
                 return TitleTypeSettings.FriendlyName;
@@ -162,7 +162,7 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
             audioDevicesManager = new AudioDevicesManager();
         }
 
-        public string GetTranslatedDeviceNotFoundError(string deviceName)
+        private string GetTranslatedDeviceNotFoundError(string deviceName)
         {
             var message = Context.API.GetTranslation("plugin_audiodeviceselector_device_not_found");
             if (string.IsNullOrEmpty(message))
@@ -173,7 +173,7 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
             return string.Format(message, deviceName);
         }
 
-        public string GetTranslatedChangingDeviceError()
+        private string GetTranslatedChangingDeviceError()
         {
             return Context.API.GetTranslation("plugin_audiodeviceselector_error_while_changing_device");
         }
