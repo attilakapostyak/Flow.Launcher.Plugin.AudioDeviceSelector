@@ -16,14 +16,11 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
         internal PluginInitContext Context;
 
         private DateTime lastDeviceUpdateTimeStamp = DateTime.Now;
-        private int updateIntervalSeconds = 5;
-        private MMDeviceEnumerator deviceEnumerator = new MMDeviceEnumerator();
 
         private const string imagePath = "Images/speaker.png";
 
         private SettingsUserControl SettingWindow;
         private Settings settings;
-        private bool disposedValue;
 
         private AudioDevicesManager audioDevicesManager;
 
