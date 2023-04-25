@@ -30,7 +30,7 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
             return SettingWindow;
         }
 
-        public TitleTypeSettings GetTitleTypeSettings(Settings settings)
+        public TitleTypeSettings GetTitleTypeSettings()
         {
             if (settings.DisplayFriendlyName)
                 return TitleTypeSettings.FriendlyName;
@@ -49,7 +49,7 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
                 audioDevicesManager.UpdateDevices();
                 var results = new List<Result>();
 
-                var titleType = GetTitleTypeSettings(settings);
+                var titleType = GetTitleTypeSettings();
 
                 foreach (var device in audioDevicesManager.Devices)
                 {
