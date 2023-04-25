@@ -1,13 +1,9 @@
-﻿using Flow.Launcher.Plugin.AudioDeviceSelector.Audio;
-using Flow.Launcher.Plugin.AudioDeviceSelector.Audio.Interop;
+﻿using System;
+using System.Collections.Generic;
+using System.Windows.Controls;
+using Flow.Launcher.Plugin.AudioDeviceSelector.Audio;
 using Flow.Launcher.Plugin.AudioDeviceSelector.Components;
 using Flow.Launcher.Plugin.AudioDeviceSelector.Views;
-using NAudio.CoreAudioApi;
-using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using System.Windows.Controls;
-using System.Windows.Navigation;
 
 namespace Flow.Launcher.Plugin.AudioDeviceSelector
 {
