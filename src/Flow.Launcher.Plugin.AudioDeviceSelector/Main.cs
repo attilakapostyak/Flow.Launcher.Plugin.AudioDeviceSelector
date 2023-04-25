@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows.Controls;
 using Flow.Launcher.Plugin.AudioDeviceSelector.Audio;
 using Flow.Launcher.Plugin.AudioDeviceSelector.Components;
@@ -7,6 +8,7 @@ using Flow.Launcher.Plugin.AudioDeviceSelector.Views;
 
 namespace Flow.Launcher.Plugin.AudioDeviceSelector
 {
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
     public class Main : IPlugin, IPluginI18n, ISettingProvider
     {
         internal PluginInitContext Context;
@@ -73,7 +75,7 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
                     {
                         Title = title,
                         SubTitle = subTitle,
-                        Action = c =>
+                        Action = _ =>
                         {
                             try
                             {
@@ -81,15 +83,14 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
                                 {
                                     // Show Notification Message if device is not found
                                     // Can happen in situations where since FlowLauncher was shown, the device went offline
-                                    Context.API.ShowMsg(GetTranslatedPluginTitle(),
-                                                            GetTranslatedDeviceNotFoundError(device.FriendlyName));
+                                    Context.API.ShowMsg(GetTranslatedPluginTitle(), GetTranslatedDeviceNotFoundError(device.FriendlyName));
                                 }
                             }
                             catch (Exception)
                             {
-                                Context.API.ShowMsg(GetTranslatedPluginTitle(),
-                                                        GetTranslatedChangingDeviceError());
+                                Context.API.ShowMsg(GetTranslatedPluginTitle(), GetTranslatedChangingDeviceError());
                             }
+
                             return true;
                         },
                         IcoPath = imagePath
@@ -113,19 +114,19 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
         // Returns a list with a single result
         private static List<Result> SingleResult(string title, string subtitle = "", Action action = default, bool hideAfterAction = true) =>
             new()
+            {
+                new Result
                 {
-                    new Result()
+                    Title = title,
+                    SubTitle = subtitle,
+                    IcoPath = imagePath,
+                    Action = _ =>
                     {
-                        Title = title,
-                        SubTitle = subtitle,
-                        IcoPath = imagePath ,
-                        Action = _ =>
-                        {
-                            action?.Invoke();
-                            return hideAfterAction;
-                        }
+                        action?.Invoke();
+                        return hideAfterAction;
                     }
-                };
+                }
+            };
 
         public void Init(PluginInitContext context)
         {
@@ -147,10 +148,10 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
 
             return string.Format(message, deviceName);
         }
-        
+
         public string GetTranslatedChangingDeviceError()
         {
-            return Context.API.GetTranslation("plugin_audiodeviceselector_error_while_changing_device"); ;
+            return Context.API.GetTranslation("plugin_audiodeviceselector_error_while_changing_device");
         }
 
         public string GetTranslatedPluginTitle()
