@@ -15,8 +15,6 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
     {
         internal PluginInitContext Context;
 
-        private DateTime lastDeviceUpdateTimeStamp = DateTime.Now;
-
         private const string imagePath = "Images/speaker.png";
 
         private SettingsUserControl SettingWindow;
