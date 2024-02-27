@@ -64,6 +64,11 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector.Views
             FriendlyNameOption.Content = Context.API.GetTranslation("plugin_audiodeviceselector_settings_friendlynameoption");
             DeviceNameOption.Content = Context.API.GetTranslation("plugin_audiodeviceselector_settings_devicenameoption");
             DeviceDescriptionOption.Content = Context.API.GetTranslation("plugin_audiodeviceselector_settings_devicedescriptionoption");
+
+            CacheDeviceNamesCheckbox.Content =
+                Context.API.GetTranslation("plugin_audiodeviceselector_settings_cache_device_names_checkbox");
+            CacheDeviceNamesExplanation.Text =
+                Context.API.GetTranslation("plugin_audiodeviceselector_settings_cache_device_names_explanation");
         }
     }
 }

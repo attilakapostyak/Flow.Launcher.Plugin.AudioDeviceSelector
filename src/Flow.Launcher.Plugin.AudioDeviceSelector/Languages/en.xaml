@@ -13,5 +13,8 @@
     <system:String x:Key="plugin_audiodeviceselector_settings_friendlynameoption">Friendly Name</system:String>
     <system:String x:Key="plugin_audiodeviceselector_settings_devicenameoption">Device Name</system:String>
     <system:String x:Key="plugin_audiodeviceselector_settings_devicedescriptionoption">Device Description</system:String>
+    
+    <system:String x:Key="plugin_audiodeviceselector_settings_cache_device_names_checkbox">Cache device names</system:String>
+    <system:String x:Key="plugin_audiodeviceselector_settings_cache_device_names_explanation">If checked, will make search much faster when you have many devices.</system:String>
 
 </ResourceDictionary>

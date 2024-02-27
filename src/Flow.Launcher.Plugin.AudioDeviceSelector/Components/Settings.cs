@@ -9,6 +9,7 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector.Components
         private bool displayFriendlyName;
         private bool displayDeviceName;
         private bool displayDeviceDescription;
+        private bool cacheDeviceNames;
 
         public Settings()
         {
@@ -42,6 +43,17 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector.Components
             set
             {
                 displayDeviceDescription = value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public bool CacheDeviceNames
+        {
+            get => cacheDeviceNames;
+            set
+            {
+                cacheDeviceNames = value;
 
                 OnPropertyChanged();
             }

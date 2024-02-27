@@ -42,6 +42,10 @@
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
+            <StackPanel Orientation="Vertical" Margin="0 0 8 0">
+                <CheckBox Name="CacheDeviceNamesCheckbox" Content="Cache device names" IsChecked="{Binding CacheDeviceNames}" />
+                <TextBlock Name="CacheDeviceNamesExplanation" TextWrapping="Wrap" MaxWidth="500" HorizontalAlignment="Left" Text="If checked, will make search much faster when you have many devices." />
+            </StackPanel>
         </StackPanel>
     </Grid>
 </UserControl>
