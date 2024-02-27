@@ -10,7 +10,7 @@ using Flow.Launcher.Plugin.AudioDeviceSelector.Views;
 namespace Flow.Launcher.Plugin.AudioDeviceSelector
 {
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    public class Main : IPlugin, IPluginI18n, ISettingProvider
+    public class Main : IPlugin, IPluginI18n, ISettingProvider, IDisposable
     {
         private PluginInitContext Context;
 
@@ -84,18 +84,19 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
             {
                 string title = string.Empty;
                 string subTitle = string.Empty;
+                var friendlyName = settings.CacheDeviceNames ? audioDevicesManager.GetDeviceNameFromCache(device) : device.FriendlyName;
                 switch (titleType)
                 {
                     case TitleTypeSettings.FriendlyName:
-                        title = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.FriendlyName);
+                        title = audioDevicesManager.GetDeviceTitle(friendlyName, TitleTypeSettings.FriendlyName);
                         break;
                     case TitleTypeSettings.DeviceName:
-                        title = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.DeviceName);
-                        subTitle = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.DeviceDescription);
+                        title = audioDevicesManager.GetDeviceTitle(friendlyName, TitleTypeSettings.DeviceName);
+                        subTitle = audioDevicesManager.GetDeviceTitle(friendlyName, TitleTypeSettings.DeviceDescription);
                         break;
                     case TitleTypeSettings.DeviceDescription:
-                        title = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.DeviceDescription);
-                        subTitle = audioDevicesManager.GetDeviceTitle(device.FriendlyName, TitleTypeSettings.DeviceName);
+                        title = audioDevicesManager.GetDeviceTitle(friendlyName, TitleTypeSettings.DeviceDescription);
+                        subTitle = audioDevicesManager.GetDeviceTitle(friendlyName, TitleTypeSettings.DeviceName);
                         break;
                 }
 
@@ -112,7 +113,7 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
                     {
                         try
                         {
-                            if (!audioDevicesManager.SetDevice(device.FriendlyName))
+                            if (!audioDevicesManager.SetDevice(friendlyName))
                             {
                                 // Show Notification Message if device is not found
                                 // Can happen in situations where since FlowLauncher was shown, the device went offline
@@ -159,7 +160,7 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
             if (!settings.DisplayFriendlyName && !settings.DisplayDeviceName && !settings.DisplayDeviceDescription)
                 settings.DisplayFriendlyName = true;
 
-            audioDevicesManager = new AudioDevicesManager();
+            audioDevicesManager = new AudioDevicesManager(settings);
         }
 
         private string GetTranslatedDeviceNotFoundError(string deviceName)
@@ -186,6 +187,10 @@ namespace Flow.Launcher.Plugin.AudioDeviceSelector
         public string GetTranslatedPluginDescription()
         {
             return Context.API.GetTranslation("plugin_audiodeviceselector_plugin_description");
+        }
+
+        public void Dispose() {
+            audioDevicesManager.Dispose();
         }
     }
 }
